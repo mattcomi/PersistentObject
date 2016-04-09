@@ -1,6 +1,5 @@
 language: objective-c
 osx_image: xcode7.3
 xcode_project: PersistentObject.xcodeproj
-
-script:
-- xcodebuild clean build test -project PersistentObject.xcodeproj -scheme PersistentObject -sdk iphonesimulator
+xcode_scheme: PersistentObject
+xcode_sdk: iphonesimulator 9.3
