@@ -5,5 +5,5 @@ xcode_scheme: PersistentObject
 xcode_sdk: iphonesimulator9.3
 
 before_install:
-  - brew update
-  - brew outdated xctool || brew upgrade xctool
+  - git clone https://github.com/facebook/xctool.git
+  - xctool/xctool.sh -project PersistentObject.xcodeproj -scheme PersistentObject -sdk iphonesimulator9.3 build test
