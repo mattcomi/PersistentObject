@@ -6,4 +6,6 @@ xcode_sdk: iphonesimulator9.3
 
 before_install:
   - git clone https://github.com/facebook/xctool.git
+  
+script:
   - xctool/xctool.sh -project PersistentObject.xcodeproj -scheme PersistentObject -sdk iphonesimulator9.3 build test
