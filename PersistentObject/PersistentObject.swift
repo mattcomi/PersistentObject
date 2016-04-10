@@ -9,6 +9,7 @@ public class PersistentObject<T:NSCoding> {
   private var userDefaults: NSUserDefaults
   
   /// Initializes the `PersistentObject` with the specified key.
+  ///
   /// - parameter key:          The `NSUserDefaults` key to associate with this object.
   /// - parameter userDefaults: The `NSUserDefaults` database. Defaults to `NSUserDefaults.standardUserDefaults()`.
   /// - returns: The new `PersistentObject` instance.
@@ -26,12 +27,14 @@ public class PersistentObject<T:NSCoding> {
   }
   
   /// Resets the persistent object. Setting this to `nil` will remove the key from `NSUserDefaults`.
+  ///
   /// - parameter object: The new object to persist or `nil`.
   public func reset(object: T?) {
     self.object = object
   }
   
   /// Synchronize the persistent object.
+  ///
   /// - remark: This is also performed during deinitialization.
   public func synchronize() {
     if let object = self.object {
