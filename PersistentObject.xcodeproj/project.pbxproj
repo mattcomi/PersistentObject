@@ -385,6 +385,7 @@
 				B657743A1CB7A6110018F553 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		B657743B1CB7A6110018F553 /* Build configuration list for PBXNativeTarget "PersistentObjectTests" */ = {
 			isa = XCConfigurationList;
@@ -393,6 +394,7 @@
 				B657743D1CB7A6110018F553 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
