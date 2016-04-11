@@ -1,46 +1,49 @@
 // Copyright © 2016 Matt Comi. All rights reserved.
 
-/// An object that persists itself to the `NSUserDefaults` database.
-public class PersistentObject<T:NSCoding> {
-  /// The object being persisted.
-  public private(set) var object: T?
-  /// The `NSUserDefaults` key associated with this object.
-  public private(set) var key: String
-  private var userDefaults: NSUserDefaults
+/// A persistent object.
+public class PersistentObject<ObjectType> {
+  private let strategy: AnyStrategy<ObjectType>
   
-  /// Initializes the `PersistentObject` with the specified key.
+  /// The object being persisted.
+  public private(set) var object: ObjectType?
+  
+  /// Initializes the `PersistentObject` with the specified strategy.
   ///
-  /// - parameter key:          The `NSUserDefaults` key to associate with this object.
-  /// - parameter userDefaults: The `NSUserDefaults` database. Defaults to `NSUserDefaults.standardUserDefaults()`.
+  /// - parameter strategy:  The `PersistenceStrategy`.
   /// - returns: The new `PersistentObject` instance.
-  public init(key: String, userDefaults: NSUserDefaults = NSUserDefaults.standardUserDefaults()) {
-    self.key = key
-    self.userDefaults = userDefaults
-    
-    if let data = userDefaults.objectForKey(key) as? NSData {
-      object = NSKeyedUnarchiver.unarchiveObjectWithData(data) as? T
-    }
+  public init<StrategyType:Strategy where ObjectType == StrategyType.ObjectType>(strategy: StrategyType) {
+    self.strategy = AnyStrategy(strategy: strategy)
+    object = strategy.unarchiveObject()
+
+    #if os(iOS)
+      NSNotificationCenter.defaultCenter().addObserver(
+        self,
+        selector: #selector(applicationDidEnterBackground),
+        name: UIApplicationDidEnterBackgroundNotification,
+        object: nil)
+    #endif
   }
   
   deinit {
-    synchronize()
+    NSNotificationCenter.defaultCenter().removeObserver(self)
+    save()
   }
   
   /// Resets the persistent object. Setting this to `nil` will remove the key from `NSUserDefaults`.
   ///
   /// - parameter object: The new object to persist or `nil`.
-  public func reset(object: T?) {
+  public func reset(object: ObjectType?) {
     self.object = object
   }
   
-  /// Synchronize the persistent object.
+  /// Saves the persistent object.
   ///
-  /// - remark: This is also performed during deinitialization.
-  public func synchronize() {
-    if let object = self.object {
-      userDefaults.setObject(NSKeyedArchiver.archivedDataWithRootObject(object), forKey: key)
-    } else {
-      userDefaults.removeObjectForKey(key)
-    }
+  /// - remark: This is also performed when the application enters the background and during deinitialization.
+  public func save() {
+    strategy.archiveObject(object)
+  }
+  
+  @objc private func applicationDidEnterBackground(notification: NSNotification) {
+    save()
   }
 }

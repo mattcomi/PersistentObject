@@ -43,9 +43,15 @@ func ==(lhs: Person, rhs: Person) -> Bool {
   return lhs.name == rhs.name && lhs.age == rhs.age
 }
 
+func documentsDirectory() -> String {
+  return NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0]
+}
+
 class PersistentObjectTests: XCTestCase {
   let personKey = "person"
   let dateKey = "date"
+  
+  let filename = "\(documentsDirectory())/test.txt"
   
   override func setUp() {
     super.setUp()
@@ -54,21 +60,26 @@ class PersistentObjectTests: XCTestCase {
     NSUserDefaults.standardUserDefaults().removeObjectForKey(dateKey)
     
     NSUserDefaults.resetStandardUserDefaults()
+    
+    if NSFileManager.defaultManager().fileExistsAtPath(filename) {
+      try! NSFileManager.defaultManager().removeItemAtPath(filename)
+    }
   }
   
-  override func tearDown() {
-    print("tear down")
+  override func tearDown() {  
     // Put teardown code here. This method is called after the invocation of each test method in the class.
     super.tearDown()
   }
   
   func testBasic() {
-    let persistentPerson = PersistentObject<Person>(key: personKey)
+    let s = UserDefaultsStrategy<Person>(key: personKey)
+    
+    let persistentPerson = PersistentObject<Person>(strategy: s)
     
     // verify we have a fresh slate.
     XCTAssertNil(persistentPerson.object)
     
-    persistentPerson.reset(Person(name: "Amanda", age: 29))
+    persistentPerson.reset(Person(name: "Justin Theroux", age: 44))
     
     XCTAssertNotNil(persistentPerson.object)
     
@@ -78,12 +89,12 @@ class PersistentObjectTests: XCTestCase {
     
     // initializing another PersistentObject using the same key should fail because the PersistentObject hasn't been
     // synchronized (i.e. serialized to NSUserDefaults) yet.
-    XCTAssertNil(PersistentObject<Person>(key: personKey).object)
+    XCTAssertNil(PersistentObject<Person>(strategy: UserDefaultsStrategy(key: personKey)).object)
     
     // serialize the Person to the NSUserDefaults database so that it can be deserialized into a new PersistentObject.
-    persistentPerson.synchronize()
+    persistentPerson.save()
     
-    let anotherPersistentPerson = PersistentObject<Person>(key: personKey)
+    let anotherPersistentPerson = PersistentObject<Person>(strategy: UserDefaultsStrategy(key: personKey))
     
     XCTAssertNotNil(anotherPersistentPerson.object)
     
@@ -101,26 +112,45 @@ class PersistentObjectTests: XCTestCase {
     
     // this should fail because anotherPerson hasn't been synchronized and despite being reset to nil, is still present
     // in NSUserDefaults.
-    XCTAssertNotNil(PersistentObject<Person>(key: personKey).object)
+    XCTAssertNotNil(PersistentObject<Person>(strategy: UserDefaultsStrategy(key: personKey)).object)
     
-    anotherPersistentPerson.synchronize()
+    anotherPersistentPerson.save()
     
-    XCTAssertNil(PersistentObject<Person>(key: personKey).object)
+    XCTAssertNil(PersistentObject<Person>(strategy: UserDefaultsStrategy(key: personKey)).object)
+  }
+  
+  func testFile() {
+    let strategy = FileStrategy<Person>(filename: filename)
+    
+    let person = PersistentObject<Person>(strategy: strategy)
+    
+    XCTAssertNil(person.object)
+    
+    person.reset(Person(name: "Liv Tyler", age: 38))
+    
+    XCTAssertNotNil(person.object)
+    
+    person.save()
+    
+    // Initialize it from a different but identical FileStrategy.
+    let anotherPerson = PersistentObject<Person>(strategy: FileStrategy(filename: filename))
+    
+    XCTAssertEqual(person.object, anotherPerson.object)
   }
   
   func testDate() {
     let date = NSDate()
     
-    let persistentDate = PersistentObject<NSDate>(key: dateKey)
+    let persistentDate = PersistentObject<NSDate>(strategy: UserDefaultsStrategy(key: dateKey))
     
     // verify we have a fresh slate.
-    XCTAssertNil(PersistentObject<NSDate>(key: dateKey).object)
+    XCTAssertNil(PersistentObject<NSDate>(strategy: UserDefaultsStrategy(key: dateKey)).object)
     
     persistentDate.reset(date)
     
-    persistentDate.synchronize()
+    persistentDate.save()
     
-    let anotherPersistentDate = PersistentObject<NSDate>(key: dateKey)
+    let anotherPersistentDate = PersistentObject<NSDate>(strategy: UserDefaultsStrategy(key: dateKey))
     
     XCTAssertNotNil(anotherPersistentDate.object)
     
@@ -128,7 +158,8 @@ class PersistentObjectTests: XCTestCase {
   }
   
   func testSynchronizeOnDeinit() {
-    var persistentPerson: PersistentObject<Person>? = PersistentObject<Person>(key: personKey)
+    var persistentPerson: PersistentObject<Person>? =
+      PersistentObject<Person>(strategy: UserDefaultsStrategy(key: personKey))
     
     // verify we have a clean slate.
     XCTAssertNil(persistentPerson!.object)
@@ -137,7 +168,7 @@ class PersistentObjectTests: XCTestCase {
       return
     }
     
-    persistentPerson!.reset(Person(name: "Andy", age: 9))
+    persistentPerson!.reset(Person(name: "Carrie Coon", age: 35))
     
     XCTAssertNotNil(persistentPerson!.object)
     
@@ -147,12 +178,12 @@ class PersistentObjectTests: XCTestCase {
     
     // initializing another PersistentObject using the same key should fail because the PersistentObject hasn't been
     // synchronized (i.e. serialized to NSUserDefaults) yet.
-    XCTAssertNil(PersistentObject<Person>(key: personKey).object)
+    XCTAssertNil(PersistentObject<Person>(strategy: UserDefaultsStrategy(key: personKey)).object)
     
     // synchronization should occur on deinit.
     persistentPerson = nil
     
-    let anotherPersistentPerson = PersistentObject<Person>(key: personKey)
+    let anotherPersistentPerson = PersistentObject<Person>(strategy: UserDefaultsStrategy(key: personKey))
     
     XCTAssertNotNil(anotherPersistentPerson.object)
     
@@ -160,7 +191,7 @@ class PersistentObjectTests: XCTestCase {
       return
     }
     
-    XCTAssertEqual(anotherPersistentPerson.object!.name, "Andy")
-    XCTAssertEqual(anotherPersistentPerson.object!.age, 9)
+    XCTAssertEqual(anotherPersistentPerson.object!.name, "Carrie Coon")
+    XCTAssertEqual(anotherPersistentPerson.object!.age, 35)
   }
 }
