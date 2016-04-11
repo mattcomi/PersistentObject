@@ -4,6 +4,7 @@ xcode_sdk: iphonesimulator9.3
 
 before_install:
   - brew update
-  - brew uninstall xctool && brew install --HEAD xctool
+  - brew remove --force xctool
+  - brew install xctool --HEAD
   
 script: 'xctool -project PersistentObject.xcodeproj -scheme PersistentObject -sdk iphonesimulator9.3 -destination "platform=iOS Simulator,name=iPhone 6" build test'
