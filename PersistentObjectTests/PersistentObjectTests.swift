@@ -43,15 +43,15 @@ func ==(lhs: Person, rhs: Person) -> Bool {
   return lhs.name == rhs.name && lhs.age == rhs.age
 }
 
-func documentsDirectory() -> String {
-  return NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0]
+func documentsDirectory() -> NSURL {
+  return NSFileManager.defaultManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask)[0]
 }
 
 class PersistentObjectTests: XCTestCase {
   let personKey = "person"
   let dateKey = "date"
   
-  let filename = "\(documentsDirectory())/test.txt"
+  let filename = documentsDirectory().URLByAppendingPathComponent("test.data").path!
   
   override func setUp() {
     super.setUp()
@@ -120,6 +120,8 @@ class PersistentObjectTests: XCTestCase {
   }
   
   func testFile() {
+    print(documentsDirectory())
+    print(filename)
     let strategy = FileStrategy<Person>(filename: filename)
     
     let person = PersistentObject<Person>(strategy: strategy)

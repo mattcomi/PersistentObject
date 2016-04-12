@@ -16,11 +16,7 @@ public class FileStrategy<ObjectType:NSCoding> : Strategy {
   /// - parameter object: The object.
   public func archiveObject(object: ObjectType?) {
     if let object = object {
-      if !NSKeyedArchiver.archiveRootObject(object, toFile: filename) {
-        print("failed to archive")
-      } else {
-        print("archive success")
-      }
+      NSKeyedArchiver.archiveRootObject(object, toFile: filename)
     } else {
       if NSFileManager.defaultManager().fileExistsAtPath(filename) {
         try! NSFileManager.defaultManager().removeItemAtPath(filename)
