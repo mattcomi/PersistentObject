@@ -120,6 +120,14 @@ class PersistentObjectTests: XCTestCase {
   }
   
   func testFile() {
+    do {
+      try NSFileManager.defaultManager().createDirectoryAtURL(
+        documentsDirectory(),
+        withIntermediateDirectories: true,
+        attributes: nil)
+    } catch {
+    }
+    
     print(documentsDirectory())
     print(filename)
     let strategy = FileStrategy<Person>(filename: filename)
