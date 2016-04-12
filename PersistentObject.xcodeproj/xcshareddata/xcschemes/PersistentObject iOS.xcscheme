@@ -16,7 +16,7 @@
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "B65774231CB7A6110018F553"
                BuildableName = "PersistentObject.framework"
-               BlueprintName = "PersistentObject"
+               BlueprintName = "PersistentObject iOS"
                ReferencedContainer = "container:PersistentObject.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -33,8 +33,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "B657742D1CB7A6110018F553"
-               BuildableName = "PersistentObjectTests.xctest"
-               BlueprintName = "PersistentObjectTests"
+               BuildableName = "PersistentObject iOS Tests.xctest"
+               BlueprintName = "PersistentObject iOS Tests"
                ReferencedContainer = "container:PersistentObject.xcodeproj">
             </BuildableReference>
          </TestableReference>
@@ -42,9 +42,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "B65774231CB7A6110018F553"
+            BlueprintIdentifier = "B6662ED81CBCA92800C70006"
             BuildableName = "PersistentObject.framework"
-            BlueprintName = "PersistentObject"
+            BlueprintName = "PersistentObject Mac"
             ReferencedContainer = "container:PersistentObject.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -66,7 +66,7 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "B65774231CB7A6110018F553"
             BuildableName = "PersistentObject.framework"
-            BlueprintName = "PersistentObject"
+            BlueprintName = "PersistentObject iOS"
             ReferencedContainer = "container:PersistentObject.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -79,15 +79,6 @@
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
-      <MacroExpansion>
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "B65774231CB7A6110018F553"
-            BuildableName = "PersistentObject.framework"
-            BlueprintName = "PersistentObject"
-            ReferencedContainer = "container:PersistentObject.xcodeproj">
-         </BuildableReference>
-      </MacroExpansion>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">

@@ -1,5 +1,9 @@
 // Copyright © 2016 Matt Comi. All rights reserved.
 
+#if os(iOS)
+  import UIKit
+#endif
+
 /// A persistent object.
 public class PersistentObject<ObjectType> {
   private let strategy: AnyStrategy<ObjectType>
