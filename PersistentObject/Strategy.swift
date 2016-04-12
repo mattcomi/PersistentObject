@@ -6,12 +6,12 @@ public protocol Strategy {
   
   /// Archives an object.
   ///
-  /// parameter object: The object to archive.
+  /// - parameter object: The object to archive.
   func archiveObject(object: ObjectType?)
   
   /// Unarchives an object.
   ///
-  /// returns: The unarchived object.
+  /// - returns: The unarchived object.
   func unarchiveObject() -> ObjectType?
   
   /// Performs any necessary synchronization.

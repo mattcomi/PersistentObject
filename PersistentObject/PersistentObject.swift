@@ -10,7 +10,6 @@ public class PersistentObject<ObjectType> {
   /// Initializes the `PersistentObject` with the specified strategy.
   ///
   /// - parameter strategy:  The `PersistenceStrategy`.
-  /// - returns: The new `PersistentObject` instance.
   public init<StrategyType:Strategy where ObjectType == StrategyType.ObjectType>(strategy: StrategyType) {
     self.strategy = AnyStrategy(strategy: strategy)
     object = strategy.unarchiveObject()
@@ -45,5 +44,14 @@ public class PersistentObject<ObjectType> {
   
   @objc private func applicationDidEnterBackground(notification: NSNotification) {
     save()
+  }
+}
+
+public extension PersistentObject where ObjectType:NSCoding {
+  /// Initializes the `PersistentObject` with the `UserDefaults` strategy.
+  ///
+  /// - parameter key: The key to associate with this object.  
+  public convenience init(key: String) {
+    self.init(strategy: UserDefaultsStrategy(key: key))
   }
 }

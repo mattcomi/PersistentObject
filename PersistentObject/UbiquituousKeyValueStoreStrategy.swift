@@ -1,6 +1,10 @@
 // Copyright © 2016 Matt Comi. All rights reserved.
 
+/// A delegate of the `UbiquituousKeyValueStoreStrategy`.
 public protocol UbiquituousKeyValueStoreDelegate {
+  /// Called when the object changed externally.
+  ///
+  /// - parameter strategy: The object's strategy.
   func objectChangedExternally<ObjectType>(strategy: UbiquituousKeyValueStoreStrategy<ObjectType>)
 }
 
@@ -13,10 +17,11 @@ public class UbiquituousKeyValueStoreStrategy<ObjectType:NSCoding> : Strategy {
   
   /// Initializes the `UbiquituousKeyValueStoreStrategy` with the specified key.
   ///
-  /// - parameter key: The key to associate with this object.
-  /// - returns: The new `UbiquituousKeyValueStoreStrategy` instance.
-  public init(key: String) {
+  /// - parameter key:      The key to associate with this object.
+  /// - parameter delegate: The delegate. Default is `nil`.
+  public init(key: String, delegate: UbiquituousKeyValueStoreDelegate? = nil) {
     self.key = key
+    self.delegate = delegate
     
     NSNotificationCenter.defaultCenter().addObserver(
       self,
@@ -40,21 +45,31 @@ public class UbiquituousKeyValueStoreStrategy<ObjectType:NSCoding> : Strategy {
     }
   }
   
-  /// Unarchives an object from the `NSUbiquituousKeyValueStore` database.
+  /// Unarchives an object from the `NSUbiquituousKeyValueStore` database and synchronizes.
   ///
   /// - returns: The unarchived object.
   public func unarchiveObject() -> ObjectType? {
-    let store = NSUbiquitousKeyValueStore.defaultStore()
-    if let data = store.dataForKey(key) {
-      return NSKeyedUnarchiver.unarchiveObjectWithData(data) as? ObjectType
-    }
-    
-    return nil
+    return unarchiveObject(synchronize: true)
   }
   
   /// Synchronizes the `NSUbiquituousKeyValueStore`.
   public func synchronize() {
     NSUbiquitousKeyValueStore.defaultStore().synchronize()
+  }
+  
+  private func unarchiveObject(synchronize synchronize: Bool) -> ObjectType? {
+    var object: ObjectType? = nil
+    
+    let store = NSUbiquitousKeyValueStore.defaultStore()
+    if let data = store.dataForKey(key) {
+      object = NSKeyedUnarchiver.unarchiveObjectWithData(data) as? ObjectType
+    }
+    
+    if synchronize {
+      store.synchronize()
+    }
+    
+    return object
   }
   
   @objc private func ubiquitousKeyValueStoreDidChangeExternally(notification: NSNotification) {
@@ -71,12 +86,11 @@ public class UbiquituousKeyValueStoreStrategy<ObjectType:NSCoding> : Strategy {
     }
     
     guard let keys = userInfo[NSUbiquitousKeyValueStoreChangedKeysKey] as? [String] else {
-      print(userInfo[NSUbiquitousKeyValueStoreChangedKeysKey])
       return
     }
     
     if keys.contains(key) {
-      self.unarchiveObject()
+      self.unarchiveObject(synchronize: false)
       
       self.delegate?.objectChangedExternally(self)
     }
