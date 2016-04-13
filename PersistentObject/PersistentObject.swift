@@ -8,26 +8,26 @@
 
 /// A persistent object.
 public class PersistentObject<ObjectType> {
-  private let strategy: AnyStrategy<ObjectType>
+  private let repository: AnyRepository<ObjectType>
   
   /// The object being persisted.
   public private(set) var object: ObjectType? = nil
   
-  /// The delegate to notify when the object changes externally. Note that depending on the underlying strategy, this 
+  /// The delegate to notify when the object changes externally. Note that depending on the underlying repository, this
   /// may not occur. Default is `PersistentObjectDelegate()`.
   public let delegate: PersistentObjectDelegate<ObjectType>? = nil
   
-  /// Initializes the `PersistentObject` with the specified strategy.
+  /// Initializes the `PersistentObject` with the specified repository.
   ///
-  /// - parameter strategy: The `Strategy`.
+  /// - parameter repository: The `Repository`.
   /// - parameter delegate: The `PersistentObjectDelegate` to notify when the object changes externally.
-  public init<StrategyType:Strategy where ObjectType == StrategyType.ObjectType>(
-    strategy: StrategyType,
+  public init<RepositoryType:Repository where ObjectType == RepositoryType.ObjectType>(
+    repository: RepositoryType,
     delegate: PersistentObjectDelegate<ObjectType>? = PersistentObjectDelegate())
   {
-    self.strategy = AnyStrategy(strategy: strategy)
+    self.repository = AnyRepository(repository)
     
-    self.strategy.delegate.objectChangedExternally = { [weak self] strategy, object in
+    self.repository.delegate.objectChangedExternally = { [weak self] repository, object in
       guard self != nil else {
         return
       }
@@ -37,7 +37,7 @@ public class PersistentObject<ObjectType> {
       delegate?.objectChangedExternally?(persistentObject: self!)
     }
     
-    object = strategy.unarchiveObject()
+    object = repository.unarchiveObject()
 
     #if os(iOS)
       NSNotificationCenter.defaultCenter().addObserver(
@@ -59,9 +59,9 @@ public class PersistentObject<ObjectType> {
     save()
   }
   
-  /// Resets the persistent object. Setting this to `nil` will remove the key from `NSUserDefaults`.
+  /// Resets the persistent object.
   ///
-  /// - parameter object: The new object to persist or `nil`.
+  /// - parameter object: The new object to persist. If `nil`, the object will removed from the repository.
   public func reset(object: ObjectType?) {
     self.object = object
   }
@@ -70,12 +70,12 @@ public class PersistentObject<ObjectType> {
   ///
   /// - remark: This is also performed when the application enters the background and during deinitialization.
   public func save() {
-    strategy.archiveObject(object)
+    repository.archiveObject(object)
   }
   
-  /// Synchronizes the underlying `Strategy`.
+  /// Synchronizes the underlying `Repository`.
   public func synchronize() {
-    strategy.synchronize()
+    repository.synchronize()
   }
   
   @objc private func applicationDidEnterBackgroundOrResignActive(notification: NSNotification) {
@@ -84,32 +84,33 @@ public class PersistentObject<ObjectType> {
 }
 
 public extension PersistentObject where ObjectType:NSCoding {
-  /// Creates a `PersistentObject` that persists to the `NSUserDefaults` database.
+  /// Initializes the `PersistentObject` with a `UserDefaultsRepository`.
   ///
-  /// - parameter key:          The key to associate with this object.
-  /// - parameter userDefaults: The `NSUserDefaults` database. Defaults to `NSUserDefaults.standardUserDefaults()`.
-  /// - returns: A `PersistentObject` that persists to the `NSUserDefaults` database.
-  public class func userDefaults(
-    key key: String,
-    userDefaults: NSUserDefaults = NSUserDefaults.standardUserDefaults()) -> PersistentObject<ObjectType>
+  /// - parameter userDefaultsKey: The key to associate with this object.
+  /// - parameter userDefaults:    The `NSUserDefaults` database. Defaults to `NSUserDefaults.standardUserDefaults()`.
+  public convenience init(
+    userDefaultsKey: String,
+    userDefaults: NSUserDefaults = NSUserDefaults.standardUserDefaults())
   {
-    return PersistentObject.init(strategy: UserDefaultsStrategy(key: key, userDefaults: userDefaults))
+    self.init(repository: UserDefaultsRepository(key: userDefaultsKey, userDefaults: userDefaults))
   }
   
-  /// Creates a `PersistentObject` that persists to a file.
+  /// Initializes the `PersistentObject` with a `FileRepository`.
   ///
   /// - parameter filename: The filename.
-  public class func file(filename filename: String) -> PersistentObject<ObjectType> {
-    return PersistentObject.init(strategy: FileStrategy(filename: filename))
+  public convenience init(filename: String) {
+    self.init(repository: FileRepository(filename: filename))
   }
   
-  /// Creates a `PersistentObject` that persists to the `NSUbiquituousKeyValueStore`.
+  /// Initializes the `PersistentObject` with a `UbiquituousKeyValueStoreRepository`.
   ///
-  /// - parameter key: The key to associate with this object.
-  public class func ubiquituousKeyValueStore(
-    key key: String,
-    delegate: PersistentObjectDelegate<ObjectType>? = PersistentObjectDelegate()) -> PersistentObject<ObjectType> {
-    return PersistentObject.init(strategy: UbiquituousKeyValueStoreStrategy(key: key), delegate: delegate)
+  /// - parameter key:      The key to associate with this object.
+  /// - parameter delegate: The `PersistentObjectDelegate` to notify when the object changes externally.
+  public convenience init(
+    ubiquituousKeyValueStoreKey: String,
+    delegate: PersistentObjectDelegate<ObjectType>? = PersistentObjectDelegate())
+  {
+    self.init(repository: UbiquituousKeyValueStoreRepository(key: ubiquituousKeyValueStoreKey), delegate: delegate)
   }
 }
 

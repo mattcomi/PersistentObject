@@ -1,12 +1,12 @@
 // Copyright © 2016 Matt Comi. All rights reserved.
 
-/// A `Strategy` that persists to a file.
-class FileStrategy<ObjectType:NSCoding> : Strategy {
-  let delegate = StrategyDelegate<ObjectType>()
+/// A `Repository` that persists to a file.
+class FileRepository<ObjectType:NSCoding> : Repository {
+  let delegate = RepositoryDelegate<ObjectType>()
   
   private let filename: String
     
-  /// Initializes the `FileStrategy` with the specified filename.
+  /// Initializes the `FileRepository` with the specified filename.
   ///
   /// - parameter filename: The filename.
   init(filename: String) {
@@ -15,7 +15,7 @@ class FileStrategy<ObjectType:NSCoding> : Strategy {
   
   /// Archives an object to a file.
   ///
-  /// - parameter object: The object.
+  /// - parameter object: The object. If `nil`, the file will be deleted.
   func archiveObject(object: ObjectType?) {
     if let object = object {
       NSKeyedArchiver.archiveRootObject(object, toFile: filename)
