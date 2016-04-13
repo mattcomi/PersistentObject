@@ -10,17 +10,21 @@
 public class PersistentObject<ObjectType> {
   private let strategy: AnyStrategy<ObjectType>
   
-  /// The delegate to notify when the object changes externally.
-  public weak var delegate: PersistentObjectDelegate?
-  
   /// The object being persisted.
-  public private(set) var object: ObjectType?
+  public private(set) var object: ObjectType? = nil
+  
+  /// The delegate to notify when the object changes externally. Note that depending on the underlying strategy, this 
+  /// may not occur. Default is `PersistentObjectDelegate()`.
+  public let delegate: PersistentObjectDelegate<ObjectType>? = nil
   
   /// Initializes the `PersistentObject` with the specified strategy.
   ///
-  /// - parameter strategy:  The `Strategy`.
+  /// - parameter strategy: The `Strategy`.
+  /// - parameter delegate: The `PersistentObjectDelegate` to notify when the object changes externally.
   public init<StrategyType:Strategy where ObjectType == StrategyType.ObjectType>(
-    strategy: StrategyType, delegate: PersistentObjectDelegate? = nil) {
+    strategy: StrategyType,
+    delegate: PersistentObjectDelegate<ObjectType>? = PersistentObjectDelegate())
+  {
     self.strategy = AnyStrategy(strategy: strategy)
     
     self.strategy.delegate.objectChangedExternally = { [weak self] strategy, object in
@@ -29,7 +33,8 @@ public class PersistentObject<ObjectType> {
       }
       
       self!.object = object
-      delegate?.objectChangedExternally(self!)
+      
+      delegate?.objectChangedExternally?(persistentObject: self!)
     }
     
     object = strategy.unarchiveObject()
@@ -73,18 +78,17 @@ public class PersistentObject<ObjectType> {
     strategy.synchronize()
   }
   
-  /// Called by the underlying `Strategy` when the object changed externally.
-  ///
-  /// - parameter strategy: The object's strategy.
-  /// - parameter object:   The new object.
-  /// ::TODO::
-
   @objc private func applicationDidEnterBackgroundOrResignActive(notification: NSNotification) {
     save()
   }
 }
 
 public extension PersistentObject where ObjectType:NSCoding {
+  /// Creates a `PersistentObject` that persists to the `NSUserDefaults` database.
+  ///
+  /// - parameter key:          The key to associate with this object.
+  /// - parameter userDefaults: The `NSUserDefaults` database. Defaults to `NSUserDefaults.standardUserDefaults()`.
+  /// - returns: A `PersistentObject` that persists to the `NSUserDefaults` database.
   public class func userDefaults(
     key key: String,
     userDefaults: NSUserDefaults = NSUserDefaults.standardUserDefaults()) -> PersistentObject<ObjectType>
@@ -92,15 +96,28 @@ public extension PersistentObject where ObjectType:NSCoding {
     return PersistentObject.init(strategy: UserDefaultsStrategy(key: key, userDefaults: userDefaults))
   }
   
+  /// Creates a `PersistentObject` that persists to a file.
+  ///
+  /// - parameter filename: The filename.
   public class func file(filename filename: String) -> PersistentObject<ObjectType> {
     return PersistentObject.init(strategy: FileStrategy(filename: filename))
   }
   
+  /// Creates a `PersistentObject` that persists to the `NSUbiquituousKeyValueStore`.
+  ///
+  /// - parameter key: The key to associate with this object.
   public class func ubiquituousKeyValueStore(key key: String) -> PersistentObject<ObjectType> {
     return PersistentObject.init(strategy: UbiquituousKeyValueStoreStrategy(key: key))
   }
 }
 
-public protocol PersistentObjectDelegate : class {
-  func objectChangedExternally<ObjectType>(persistentObject: PersistentObject<ObjectType>)
+/// A `PersistentObject` delegate.
+public final class PersistentObjectDelegate<ObjectType> {
+  /// Initializes the `PersistentObjectDelegate`.
+  public init() { }
+  
+  /// A closure that is called when the object changed externally.
+  /// 
+  /// - parameter persistentObject: The persistent object whose object changed externally.
+  public var objectChangedExternally: ((persistentObject: PersistentObject<ObjectType>) -> Void)?
 }
