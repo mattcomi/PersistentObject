@@ -7,7 +7,7 @@
 
 Simple object persistence in Swift.
 
-Include support for `NSUserDefaults`, `NSUbiquitousKeyValueStore` and the file system.
+Includes support for `NSUserDefaults`, `NSUbiquitousKeyValueStore` and the file system.
 
 [API Documentation](http://cocoadocs.org/docsets/PersistentObject)
 
@@ -58,6 +58,7 @@ persistentPerson.synchronize()
 ```
 
 Manual synchronization is typically only necessary when:
+
 1. The underlying repository is a `UbiquituousKeyValueStoreRepository`
 2. You require fast-as-possible upload to iCloud after changing the object
 
@@ -68,6 +69,8 @@ The follow repositories are supported currently:
 - `FileRepository`: Persists to a file
 - `UbiquituousKeyValueStoreRepository`: Persists to the `NSUbiquituousKeyValueStore`
 - `UserDefaultsRepository`: Persists to the `NSUserDefaults` database
+
+These repositories require that the object being persisted is `NSCoding` compliant.
 
 ## External Changes
 
