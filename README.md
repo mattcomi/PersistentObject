@@ -7,7 +7,7 @@
 
 Simple object persistence in Swift.
 
-Include support for `NSUserDefaults`, `NSUbiquitousKeyValueStore` and the file system.
+Includes support for `NSUserDefaults`, `NSUbiquitousKeyValueStore` and the file system.
 
 [API Documentation](http://cocoadocs.org/docsets/PersistentObject)
 
