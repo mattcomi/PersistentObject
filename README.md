@@ -58,6 +58,7 @@ persistentPerson.synchronize()
 ```
 
 Manual synchronization is typically only necessary when:
+
 1. The underlying repository is a `UbiquituousKeyValueStoreRepository`
 2. You require fast-as-possible upload to iCloud after changing the object
 
