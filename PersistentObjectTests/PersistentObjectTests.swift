@@ -3,10 +3,10 @@
 import XCTest
 import PersistentObject
 
-class MockStrategy : Strategy {
+class MyRepository : Repository {
   typealias ObjectType = Person
   
-  var delegate = StrategyDelegate<ObjectType>()
+  var delegate = RepositoryDelegate<ObjectType>()
   
   var didArchive = false
   var didUnarchive = false
@@ -97,7 +97,7 @@ class PersistentObjectTests: XCTestCase {
   }
   
   func testBasic() {
-    let persistentPerson = PersistentObject<Person>.userDefaults(key: personKey)
+    let persistentPerson = PersistentObject<Person>(userDefaultsKey: personKey)
     
     // verify we have a fresh slate.
     XCTAssertNil(persistentPerson.object)
@@ -112,12 +112,12 @@ class PersistentObjectTests: XCTestCase {
     
     // initializing another PersistentObject using the same key should fail because the PersistentObject hasn't been
     // synchronized (i.e. serialized to NSUserDefaults) yet.
-    XCTAssertNil(PersistentObject<Person>.userDefaults(key: personKey).object)
+    XCTAssertNil(PersistentObject<Person>(userDefaultsKey: personKey).object)
     
     // serialize the Person to the NSUserDefaults database so that it can be deserialized into a new PersistentObject.
     persistentPerson.save()
     
-    let anotherPersistentPerson = PersistentObject<Person>.userDefaults(key: personKey)
+    let anotherPersistentPerson = PersistentObject<Person>(userDefaultsKey: personKey)
     
     XCTAssertNotNil(anotherPersistentPerson.object)
     
@@ -135,11 +135,11 @@ class PersistentObjectTests: XCTestCase {
     
     // this should fail because anotherPerson hasn't been synchronized and despite being reset to nil, is still present
     // in NSUserDefaults.
-    XCTAssertNotNil(PersistentObject<Person>.userDefaults(key: personKey).object)
+    XCTAssertNotNil(PersistentObject<Person>(userDefaultsKey: personKey).object)
     
     anotherPersistentPerson.save()
     
-    XCTAssertNil(PersistentObject<Person>.userDefaults(key: personKey).object)
+    XCTAssertNil(PersistentObject<Person>(userDefaultsKey: personKey).object)
   }
   
   func testFile() {
@@ -149,7 +149,7 @@ class PersistentObjectTests: XCTestCase {
         withIntermediateDirectories: true,
         attributes: nil)
     
-    let person = PersistentObject<Person>.file(filename: filename)
+    let person = PersistentObject<Person>(filename: filename)
     
     XCTAssertNil(person.object)
     
@@ -159,14 +159,14 @@ class PersistentObjectTests: XCTestCase {
     
     person.save()
     
-    // Initialize it from a different but identical FileStrategy.
-    let anotherPerson = PersistentObject<Person>.file(filename: filename)
+    // Initialize it from a different but identical FileRepository.
+    let anotherPerson = PersistentObject<Person>(filename: filename)
     
     XCTAssertEqual(person.object, anotherPerson.object)
   }
   
   func testSynchronizeOnDeinit() {
-    var persistentPerson: PersistentObject<Person>? = PersistentObject<Person>.userDefaults(key: personKey)
+    var persistentPerson: PersistentObject<Person>? = PersistentObject<Person>(userDefaultsKey: personKey)
     
     // verify we have a clean slate.
     XCTAssertNil(persistentPerson!.object)
@@ -185,12 +185,12 @@ class PersistentObjectTests: XCTestCase {
     
     // initializing another PersistentObject using the same key should fail because the PersistentObject hasn't been
     // synchronized (i.e. serialized to NSUserDefaults) yet.
-    XCTAssertNil(PersistentObject<Person>.userDefaults(key: personKey).object)
+    XCTAssertNil(PersistentObject<Person>(userDefaultsKey: personKey).object)
     
     // save should occur on deinit.
     persistentPerson = nil
     
-    let anotherPersistentPerson = PersistentObject<Person>.userDefaults(key: personKey)
+    let anotherPersistentPerson = PersistentObject<Person>(userDefaultsKey: personKey)
     
     XCTAssertNotNil(anotherPersistentPerson.object)
     
@@ -202,8 +202,8 @@ class PersistentObjectTests: XCTestCase {
     XCTAssertEqual(anotherPersistentPerson.object!.age, 35)
   }
 
-  func testMockStrategy() {
-    let strategy = MockStrategy()
+  func testRepository() {
+    let myRepository = MyRepository()
 
     let delegate = PersistentObjectDelegate<Person>()
     
@@ -215,24 +215,24 @@ class PersistentObjectTests: XCTestCase {
       XCTAssert(persistentObject.object?.name == "Patti Levin")
     }
     
-    let persistentPerson = PersistentObject<Person>(strategy: strategy, delegate: delegate)
+    let persistentPerson = PersistentObject<Person>(repository: myRepository, delegate: delegate)
   
-    XCTAssert(strategy.didUnarchive)
-    XCTAssert(!strategy.didArchive)
-    XCTAssert(!strategy.didSynchronize)
+    XCTAssert(myRepository.didUnarchive)
+    XCTAssert(!myRepository.didArchive)
+    XCTAssert(!myRepository.didSynchronize)
     
     persistentPerson.save()
     
-    XCTAssert(strategy.didArchive)
-    XCTAssert(!strategy.didSynchronize)
+    XCTAssert(myRepository.didArchive)
+    XCTAssert(!myRepository.didSynchronize)
     
     persistentPerson.synchronize()
     
-    XCTAssert(strategy.didSynchronize)
+    XCTAssert(myRepository.didSynchronize)
     
     let externalPerson = Person(name: "Patti Levin", age: 60)
     
-    strategy.delegate.objectChangedExternally?(strategy: AnyStrategy(strategy: strategy), object: externalPerson)
+    myRepository.delegate.objectChangedExternally?(repository: AnyRepository(myRepository), object: externalPerson)
     
     XCTAssertEqual(externalPerson, persistentPerson.object)
     

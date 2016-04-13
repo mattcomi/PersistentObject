@@ -1,15 +1,14 @@
 // Copyright © 2016 Matt Comi. All rights reserved.
 
-/// A `Strategy` that uses the `NSUbiquituousKeyValueStore`.
-class UbiquituousKeyValueStoreStrategy<ObjectType:NSCoding> : Strategy {
-  let delegate = StrategyDelegate<ObjectType>()
+/// A `Repository` that persists to the `NSUbiquituousKeyValueStore`.
+class UbiquituousKeyValueStoreRepository<ObjectType:NSCoding> : Repository {
+  let delegate = RepositoryDelegate<ObjectType>()
   
   private let key: String
   
-  /// Initializes the `UbiquituousKeyValueStoreStrategy` with the specified key.
+  /// Initializes the `UbiquituousKeyValueStoreRepository` with the specified key.
   ///
-  /// - parameter key:      The key to associate with this object.
-  /// - parameter delegate: The delegate. Default is `nil`.
+  /// - parameter key: The key to associate with this object.
   init(key: String) {
     self.key = key
     
@@ -38,7 +37,7 @@ class UbiquituousKeyValueStoreStrategy<ObjectType:NSCoding> : Strategy {
   }
   
   /// Unarchives an object from the `NSUbiquituousKeyValueStore` and synchronizes immediately to determine if a newer
-  /// value exists in iCloud. If a newer value is found, it will replace
+  /// value exists in iCloud.
   ///
   /// - returns: The unarchived object.
   func unarchiveObject() -> ObjectType? {
@@ -85,7 +84,7 @@ class UbiquituousKeyValueStoreStrategy<ObjectType:NSCoding> : Strategy {
     if keys.contains(key) {
       let object = self.unarchiveObject(synchronize: false)
       
-      self.delegate.objectChangedExternally?(strategy: AnyStrategy(strategy: self), object: object)
+      self.delegate.objectChangedExternally?(repository: AnyRepository(self), object: object)
     }
   }
 }

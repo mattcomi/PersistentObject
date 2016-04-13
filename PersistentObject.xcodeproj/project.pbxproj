@@ -7,18 +7,18 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		B61DCC8B1CBB43F000245691 /* Strategy.swift in Sources */ = {isa = PBXBuildFile; fileRef = B61DCC8A1CBB43F000245691 /* Strategy.swift */; };
+		B61DCC8B1CBB43F000245691 /* Repository.swift in Sources */ = {isa = PBXBuildFile; fileRef = B61DCC8A1CBB43F000245691 /* Repository.swift */; };
 		B65774281CB7A6110018F553 /* PersistentObject.h in Headers */ = {isa = PBXBuildFile; fileRef = B65774271CB7A6110018F553 /* PersistentObject.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B657742F1CB7A6110018F553 /* PersistentObject.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B65774241CB7A6110018F553 /* PersistentObject.framework */; };
 		B65774341CB7A6110018F553 /* PersistentObjectTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B65774331CB7A6110018F553 /* PersistentObjectTests.swift */; };
 		B657743F1CB7A6250018F553 /* PersistentObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = B657743E1CB7A6250018F553 /* PersistentObject.swift */; };
-		B6662EC61CBC0C2600C70006 /* UserDefaultsStrategy.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6662EC51CBC0C2600C70006 /* UserDefaultsStrategy.swift */; };
-		B6662EC81CBC0C4400C70006 /* UbiquituousKeyValueStoreStrategy.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6662EC71CBC0C4400C70006 /* UbiquituousKeyValueStoreStrategy.swift */; };
-		B6662ECA1CBC0CD300C70006 /* FileStrategy.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6662EC91CBC0CD300C70006 /* FileStrategy.swift */; };
-		B6662EDA1CBCA92800C70006 /* UbiquituousKeyValueStoreStrategy.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6662EC71CBC0C4400C70006 /* UbiquituousKeyValueStoreStrategy.swift */; };
-		B6662EDB1CBCA92800C70006 /* FileStrategy.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6662EC91CBC0CD300C70006 /* FileStrategy.swift */; };
-		B6662EDC1CBCA92800C70006 /* UserDefaultsStrategy.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6662EC51CBC0C2600C70006 /* UserDefaultsStrategy.swift */; };
-		B6662EDD1CBCA92800C70006 /* Strategy.swift in Sources */ = {isa = PBXBuildFile; fileRef = B61DCC8A1CBB43F000245691 /* Strategy.swift */; };
+		B6662EC61CBC0C2600C70006 /* UserDefaultsRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6662EC51CBC0C2600C70006 /* UserDefaultsRepository.swift */; };
+		B6662EC81CBC0C4400C70006 /* UbiquituousKeyValueStoreRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6662EC71CBC0C4400C70006 /* UbiquituousKeyValueStoreRepository.swift */; };
+		B6662ECA1CBC0CD300C70006 /* FileRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6662EC91CBC0CD300C70006 /* FileRepository.swift */; };
+		B6662EDA1CBCA92800C70006 /* UbiquituousKeyValueStoreRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6662EC71CBC0C4400C70006 /* UbiquituousKeyValueStoreRepository.swift */; };
+		B6662EDB1CBCA92800C70006 /* FileRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6662EC91CBC0CD300C70006 /* FileRepository.swift */; };
+		B6662EDC1CBCA92800C70006 /* UserDefaultsRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6662EC51CBC0C2600C70006 /* UserDefaultsRepository.swift */; };
+		B6662EDD1CBCA92800C70006 /* Repository.swift in Sources */ = {isa = PBXBuildFile; fileRef = B61DCC8A1CBB43F000245691 /* Repository.swift */; };
 		B6662EDE1CBCA92800C70006 /* PersistentObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = B657743E1CB7A6250018F553 /* PersistentObject.swift */; };
 		B6662EE11CBCA92800C70006 /* PersistentObject.h in Headers */ = {isa = PBXBuildFile; fileRef = B65774271CB7A6110018F553 /* PersistentObject.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6662EEC1CBCA9AB00C70006 /* PersistentObjectTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B65774331CB7A6110018F553 /* PersistentObjectTests.swift */; };
@@ -43,7 +43,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		B61DCC8A1CBB43F000245691 /* Strategy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Strategy.swift; sourceTree = "<group>"; };
+		B61DCC8A1CBB43F000245691 /* Repository.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Repository.swift; sourceTree = "<group>"; };
 		B65774241CB7A6110018F553 /* PersistentObject.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = PersistentObject.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B65774271CB7A6110018F553 /* PersistentObject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PersistentObject.h; sourceTree = "<group>"; };
 		B65774291CB7A6110018F553 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -51,9 +51,9 @@
 		B65774331CB7A6110018F553 /* PersistentObjectTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistentObjectTests.swift; sourceTree = "<group>"; };
 		B65774351CB7A6110018F553 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B657743E1CB7A6250018F553 /* PersistentObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PersistentObject.swift; sourceTree = "<group>"; };
-		B6662EC51CBC0C2600C70006 /* UserDefaultsStrategy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserDefaultsStrategy.swift; sourceTree = "<group>"; };
-		B6662EC71CBC0C4400C70006 /* UbiquituousKeyValueStoreStrategy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UbiquituousKeyValueStoreStrategy.swift; sourceTree = "<group>"; };
-		B6662EC91CBC0CD300C70006 /* FileStrategy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileStrategy.swift; sourceTree = "<group>"; };
+		B6662EC51CBC0C2600C70006 /* UserDefaultsRepository.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserDefaultsRepository.swift; sourceTree = "<group>"; };
+		B6662EC71CBC0C4400C70006 /* UbiquituousKeyValueStoreRepository.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UbiquituousKeyValueStoreRepository.swift; sourceTree = "<group>"; };
+		B6662EC91CBC0CD300C70006 /* FileRepository.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileRepository.swift; sourceTree = "<group>"; };
 		B6662EE61CBCA92800C70006 /* PersistentObject.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = PersistentObject.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B6662EF31CBCA9AB00C70006 /* PersistentObject Mac Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "PersistentObject Mac Tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -115,13 +115,13 @@
 		B65774261CB7A6110018F553 /* PersistentObject */ = {
 			isa = PBXGroup;
 			children = (
-				B65774271CB7A6110018F553 /* PersistentObject.h */,
+				B6662EC91CBC0CD300C70006 /* FileRepository.swift */,
 				B65774291CB7A6110018F553 /* Info.plist */,
+				B65774271CB7A6110018F553 /* PersistentObject.h */,
 				B657743E1CB7A6250018F553 /* PersistentObject.swift */,
-				B61DCC8A1CBB43F000245691 /* Strategy.swift */,
-				B6662EC51CBC0C2600C70006 /* UserDefaultsStrategy.swift */,
-				B6662EC71CBC0C4400C70006 /* UbiquituousKeyValueStoreStrategy.swift */,
-				B6662EC91CBC0CD300C70006 /* FileStrategy.swift */,
+				B61DCC8A1CBB43F000245691 /* Repository.swift */,
+				B6662EC71CBC0C4400C70006 /* UbiquituousKeyValueStoreRepository.swift */,
+				B6662EC51CBC0C2600C70006 /* UserDefaultsRepository.swift */,
 			);
 			path = PersistentObject;
 			sourceTree = "<group>";
@@ -303,10 +303,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B6662EC81CBC0C4400C70006 /* UbiquituousKeyValueStoreStrategy.swift in Sources */,
-				B6662ECA1CBC0CD300C70006 /* FileStrategy.swift in Sources */,
-				B6662EC61CBC0C2600C70006 /* UserDefaultsStrategy.swift in Sources */,
-				B61DCC8B1CBB43F000245691 /* Strategy.swift in Sources */,
+				B6662EC81CBC0C4400C70006 /* UbiquituousKeyValueStoreRepository.swift in Sources */,
+				B6662ECA1CBC0CD300C70006 /* FileRepository.swift in Sources */,
+				B6662EC61CBC0C2600C70006 /* UserDefaultsRepository.swift in Sources */,
+				B61DCC8B1CBB43F000245691 /* Repository.swift in Sources */,
 				B657743F1CB7A6250018F553 /* PersistentObject.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -323,10 +323,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B6662EDA1CBCA92800C70006 /* UbiquituousKeyValueStoreStrategy.swift in Sources */,
-				B6662EDB1CBCA92800C70006 /* FileStrategy.swift in Sources */,
-				B6662EDC1CBCA92800C70006 /* UserDefaultsStrategy.swift in Sources */,
-				B6662EDD1CBCA92800C70006 /* Strategy.swift in Sources */,
+				B6662EDA1CBCA92800C70006 /* UbiquituousKeyValueStoreRepository.swift in Sources */,
+				B6662EDB1CBCA92800C70006 /* FileRepository.swift in Sources */,
+				B6662EDC1CBCA92800C70006 /* UserDefaultsRepository.swift in Sources */,
+				B6662EDD1CBCA92800C70006 /* Repository.swift in Sources */,
 				B6662EDE1CBCA92800C70006 /* PersistentObject.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

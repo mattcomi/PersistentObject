@@ -1,13 +1,13 @@
 // Copyright © 2016 Matt Comi. All rights reserved.
 
-/// A `Strategy` that uses the `NSUserDefaults` database.
-class UserDefaultsStrategy<ObjectType:NSCoding> : Strategy {
-  let delegate = StrategyDelegate<ObjectType>()
+/// A `Repository` that persists to the `NSUserDefaults` database.
+class UserDefaultsRepository<ObjectType:NSCoding> : Repository {
+  let delegate = RepositoryDelegate<ObjectType>()
   
   private let key: String
   private var userDefaults: NSUserDefaults
   
-  /// Initializes the `UserDefaultsStrategy` with the specified key and `NSUserDefaults` database.
+  /// Initializes the `UserDefaultsRepository` with the specified key and `NSUserDefaults` database.
   ///
   /// - parameter key:          The key.
   /// - parameter userDefaults: The `NSUserDefaults` database.
