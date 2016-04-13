@@ -70,6 +70,8 @@ The follow repositories are supported currently:
 - `UbiquituousKeyValueStoreRepository`: Persists to the `NSUbiquituousKeyValueStore`
 - `UserDefaultsRepository`: Persists to the `NSUserDefaults` database
 
+These repositories require that the object being persisted is `NSCoding` compliant.
+
 ## External Changes
 
 A `Repository` may support external changes. For example, when using the `UbiquituousKeyValueStoreRepository`, it is possible for the value to change in iCloud. If an external change occurs, the `PersistentObject`'s underlying object is replaced, invalidating any references. To be notified when this occurs, provide a delegate when initializing the `PersistentObject`:
