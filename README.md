@@ -1,8 +1,8 @@
 # PersistentObject
 
-[![](https://travis-ci.org/mattcomi/PersistentObject.svg?branch=master)](https://travis-ci.org/mattcomi/PersistentObject)
+![](https://travis-ci.org/mattcomi/PersistentObject.svg?branch=master)
 [![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
-[![](https://img.shields.io/cocoapods/v/PersistentObject.svg?style=flat)](https://cocoapods.org/pods/PersistentObject)
+![](https://img.shields.io/cocoapods/v/PersistentObject.svg?style=flat)
 [![Platform](https://img.shields.io/cocoapods/p/PersistentObject.svg?style=flat)](http://cocoadocs.org/docsets/PersistentObject)
 
 Simplifies object persistence in Swift.
@@ -13,13 +13,13 @@ Include support for `NSUserDefaults`, `NSUbiquitousKeyValueStore` and the file s
 
 ## Usage
 
-To persist an NSCoding-compliant object to the `NSUserDefaults` database, specify its key.
+To persist an NSCoding-compliant object to the `NSUserDefaults` database:
 
 ```swift
-let persistentPerson = PersistentObject<Person>(key: "person")
+let persistentPerson = PersistentObject<Person>.userDefaults(key: personKey)
 ```
 
-If an object with the specified key has been persisted previously, it will be unarchived from `NSUserDefaults` and initialized. If not, you will need to initialize it yourself.
+If an object with the specified key had been persisted previously, it will be unarchived from `NSUserDefaults` and initialized. If not, you will need to initialize it yourself.
 
 ```swift
 if persistentPerson.object == nil {
@@ -27,7 +27,7 @@ if persistentPerson.object == nil {
 }
 ```
 
-The underlying object may be accessed with the `object` property.
+The underlying object may now be accessed with the `object` property.
 
 ```swift
 persistentPerson.object?.age = 70

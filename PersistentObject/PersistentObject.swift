@@ -32,7 +32,7 @@ public class PersistentObject<ObjectType> {
         return
       }
       
-      self!.object = object
+      self!.reset(object)
       
       delegate?.objectChangedExternally?(persistentObject: self!)
     }
@@ -106,8 +106,10 @@ public extension PersistentObject where ObjectType:NSCoding {
   /// Creates a `PersistentObject` that persists to the `NSUbiquituousKeyValueStore`.
   ///
   /// - parameter key: The key to associate with this object.
-  public class func ubiquituousKeyValueStore(key key: String) -> PersistentObject<ObjectType> {
-    return PersistentObject.init(strategy: UbiquituousKeyValueStoreStrategy(key: key))
+  public class func ubiquituousKeyValueStore(
+    key key: String,
+    delegate: PersistentObjectDelegate<ObjectType>? = PersistentObjectDelegate()) -> PersistentObject<ObjectType> {
+    return PersistentObject.init(strategy: UbiquituousKeyValueStoreStrategy(key: key), delegate: delegate)
   }
 }
 

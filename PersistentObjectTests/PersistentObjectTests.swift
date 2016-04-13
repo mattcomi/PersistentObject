@@ -216,7 +216,7 @@ class PersistentObjectTests: XCTestCase {
     }
     
     let persistentPerson = PersistentObject<Person>(strategy: strategy, delegate: delegate)
-
+  
     XCTAssert(strategy.didUnarchive)
     XCTAssert(!strategy.didArchive)
     XCTAssert(!strategy.didSynchronize)
