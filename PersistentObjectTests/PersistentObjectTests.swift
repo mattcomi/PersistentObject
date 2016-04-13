@@ -1,7 +1,32 @@
 // Copyright © 2016 Matt Comi. All rights reserved.
 
 import XCTest
-@testable import PersistentObject
+import PersistentObject
+
+class MockStrategy : Strategy {
+  typealias ObjectType = Person
+  
+  var delegate = StrategyDelegate<ObjectType>()
+  
+  var didArchive = false
+  var didUnarchive = false
+  var didSynchronize = false
+  
+  init() {}
+  
+  func archiveObject(object: Person?) {
+    self.didArchive = true
+  }
+  
+  func unarchiveObject() -> Person? {
+    self.didUnarchive = true
+    return nil
+  }
+  
+  func synchronize() {
+    self.didSynchronize = true
+  }
+}
 
 class Person : NSObject, NSCoding {
   var name: String
@@ -72,9 +97,7 @@ class PersistentObjectTests: XCTestCase {
   }
   
   func testBasic() {
-    let s = UserDefaultsStrategy<Person>(key: personKey)
-    
-    let persistentPerson = PersistentObject<Person>(strategy: s)
+    let persistentPerson = PersistentObject<Person>.userDefaults(key: personKey)
     
     // verify we have a fresh slate.
     XCTAssertNil(persistentPerson.object)
@@ -89,12 +112,12 @@ class PersistentObjectTests: XCTestCase {
     
     // initializing another PersistentObject using the same key should fail because the PersistentObject hasn't been
     // synchronized (i.e. serialized to NSUserDefaults) yet.
-    XCTAssertNil(PersistentObject<Person>(strategy: UserDefaultsStrategy(key: personKey)).object)
+    XCTAssertNil(PersistentObject<Person>.userDefaults(key: personKey).object)
     
     // serialize the Person to the NSUserDefaults database so that it can be deserialized into a new PersistentObject.
     persistentPerson.save()
     
-    let anotherPersistentPerson = PersistentObject<Person>(strategy: UserDefaultsStrategy(key: personKey))
+    let anotherPersistentPerson = PersistentObject<Person>.userDefaults(key: personKey)
     
     XCTAssertNotNil(anotherPersistentPerson.object)
     
@@ -112,11 +135,11 @@ class PersistentObjectTests: XCTestCase {
     
     // this should fail because anotherPerson hasn't been synchronized and despite being reset to nil, is still present
     // in NSUserDefaults.
-    XCTAssertNotNil(PersistentObject<Person>(strategy: UserDefaultsStrategy(key: personKey)).object)
+    XCTAssertNotNil(PersistentObject<Person>.userDefaults(key: personKey).object)
     
     anotherPersistentPerson.save()
     
-    XCTAssertNil(PersistentObject<Person>(strategy: UserDefaultsStrategy(key: personKey)).object)
+    XCTAssertNil(PersistentObject<Person>.userDefaults(key: personKey).object)
   }
   
   func testFile() {
@@ -126,9 +149,7 @@ class PersistentObjectTests: XCTestCase {
         withIntermediateDirectories: true,
         attributes: nil)
     
-    let strategy = FileStrategy<Person>(filename: filename)
-    
-    let person = PersistentObject<Person>(strategy: strategy)
+    let person = PersistentObject<Person>.file(filename: filename)
     
     XCTAssertNil(person.object)
     
@@ -139,33 +160,13 @@ class PersistentObjectTests: XCTestCase {
     person.save()
     
     // Initialize it from a different but identical FileStrategy.
-    let anotherPerson = PersistentObject<Person>(strategy: FileStrategy(filename: filename))
+    let anotherPerson = PersistentObject<Person>.file(filename: filename)
     
     XCTAssertEqual(person.object, anotherPerson.object)
   }
   
-  func testDate() {
-    let date = NSDate()
-    
-    let persistentDate = PersistentObject<NSDate>(strategy: UserDefaultsStrategy(key: dateKey))
-    
-    // verify we have a fresh slate.
-    XCTAssertNil(PersistentObject<NSDate>(strategy: UserDefaultsStrategy(key: dateKey)).object)
-    
-    persistentDate.reset(date)
-    
-    persistentDate.save()
-    
-    let anotherPersistentDate = PersistentObject<NSDate>(strategy: UserDefaultsStrategy(key: dateKey))
-    
-    XCTAssertNotNil(anotherPersistentDate.object)
-    
-    XCTAssertEqual(anotherPersistentDate.object, date)
-  }
-  
   func testSynchronizeOnDeinit() {
-    var persistentPerson: PersistentObject<Person>? =
-      PersistentObject<Person>(strategy: UserDefaultsStrategy(key: personKey))
+    var persistentPerson: PersistentObject<Person>? = PersistentObject<Person>.userDefaults(key: personKey)
     
     // verify we have a clean slate.
     XCTAssertNil(persistentPerson!.object)
@@ -184,12 +185,12 @@ class PersistentObjectTests: XCTestCase {
     
     // initializing another PersistentObject using the same key should fail because the PersistentObject hasn't been
     // synchronized (i.e. serialized to NSUserDefaults) yet.
-    XCTAssertNil(PersistentObject<Person>(strategy: UserDefaultsStrategy(key: personKey)).object)
+    XCTAssertNil(PersistentObject<Person>.userDefaults(key: personKey).object)
     
-    // synchronization should occur on deinit.
+    // save should occur on deinit.
     persistentPerson = nil
     
-    let anotherPersistentPerson = PersistentObject<Person>(strategy: UserDefaultsStrategy(key: personKey))
+    let anotherPersistentPerson = PersistentObject<Person>.userDefaults(key: personKey)
     
     XCTAssertNotNil(anotherPersistentPerson.object)
     
@@ -199,5 +200,42 @@ class PersistentObjectTests: XCTestCase {
     
     XCTAssertEqual(anotherPersistentPerson.object!.name, "Carrie Coon")
     XCTAssertEqual(anotherPersistentPerson.object!.age, 35)
+  }
+
+  func testMockStrategy() {
+    let strategy = MockStrategy()
+
+    let delegate = PersistentObjectDelegate<Person>()
+    
+    var objectDidChangeExternally = false
+    
+    delegate.objectChangedExternally = { (persistentObject) in
+      objectDidChangeExternally = true
+      
+      XCTAssert(persistentObject.object?.name == "Patti Levin")
+    }
+    
+    let persistentPerson = PersistentObject<Person>(strategy: strategy, delegate: delegate)
+  
+    XCTAssert(strategy.didUnarchive)
+    XCTAssert(!strategy.didArchive)
+    XCTAssert(!strategy.didSynchronize)
+    
+    persistentPerson.save()
+    
+    XCTAssert(strategy.didArchive)
+    XCTAssert(!strategy.didSynchronize)
+    
+    persistentPerson.synchronize()
+    
+    XCTAssert(strategy.didSynchronize)
+    
+    let externalPerson = Person(name: "Patti Levin", age: 60)
+    
+    strategy.delegate.objectChangedExternally?(strategy: AnyStrategy(strategy: strategy), object: externalPerson)
+    
+    XCTAssertEqual(externalPerson, persistentPerson.object)
+    
+    XCTAssert(objectDidChangeExternally)
   }
 }

@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
   s.name = "PersistentObject"
-  s.version = "0.2.2"
-  s.summary = "Simplifies object persistence in Swift."
+  s.version = "0.3"
+  s.summary = "Simple object persistence in Swift."
 
   s.homepage = "https://github.com/mattcomi/PersistentObject"  
   s.license = { :type => "MIT", :file => "LICENSE" }

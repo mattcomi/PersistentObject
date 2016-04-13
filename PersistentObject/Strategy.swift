@@ -3,7 +3,10 @@
 /// Types adopting the `Strategy` protocol are capable of archiving and unarchiving an object to a persistent store.
 public protocol Strategy {
   associatedtype ObjectType
-  
+ 
+  /// The delegate to notify when the object changes externally.
+  var delegate: StrategyDelegate<ObjectType> { get }
+
   /// Archives an object.
   ///
   /// - parameter object: The object to archive.
@@ -18,59 +21,48 @@ public protocol Strategy {
   func synchronize()
 }
 
-class AnyStrategyBase<ObjectType> : Strategy {
-  func archiveObject(object: ObjectType?) { }
-  func unarchiveObject() -> ObjectType? { return nil }
-  func synchronize() { }
+/// A `Strategy` delegate.
+public final class StrategyDelegate<ObjectType> {
+  /// Initializes the `StrategyDelegate`.
+  public init() { }
+  
+  /// A closure that is called when the object changed externally.
+  ///
+  /// - parameter strategy: The type-erased strategy.
+  /// - parameter object:   The object.
+  public var objectChangedExternally: ((strategy: AnyStrategy<ObjectType>, object: ObjectType?) -> Void)?
 }
 
-/// A type-erased Strategy.
-///
-/// Forwards operations to an arbitrary underlying strategy having the same `ObjectType`, hiding the specifics of the
-/// underlying `StrategyType`.
-public class AnyStrategy<ObjectType> : AnyStrategyBase<ObjectType> {
-  private let box: AnyStrategyBase<ObjectType>
-  
-  /// Initializes the `AnyStrategy` with the specified undelying strategy.
+/// A type erased `Strategy`.
+public class AnyStrategy<ObjectType> : Strategy {
+  private let baseDelegate: () -> StrategyDelegate<ObjectType>
+  private let baseArchiveObject: (object: ObjectType?) -> Void
+  private let baseUnarchiveObject: () -> ObjectType?
+  private let baseSynchronize: () -> Void
+
+  /// Initializes the `AnyStrategy` with the specified underlying `Strategy`.
   ///
-  /// - parameter strategy: The underlying strategy. That is, the strategy to which all operations are forwarded.
-  init<StrategyType:Strategy where StrategyType.ObjectType == ObjectType>(strategy: StrategyType) {
-    box = AnyStrategyBox(strategy)
+  /// - parameter strategy: The underlying `Strategy`.
+  public init<BaseStrategy: Strategy where ObjectType == BaseStrategy.ObjectType>(strategy: BaseStrategy) {
+    baseDelegate = { strategy.delegate }
+    baseArchiveObject = strategy.archiveObject
+    baseUnarchiveObject = strategy.unarchiveObject
+    baseSynchronize = strategy.synchronize
   }
   
-  /// Archives an object using the underlying strategy.
+  /// The delegate to notify when the object changes externally.
+  public var delegate: StrategyDelegate<ObjectType> { return baseDelegate() }
+  
+  /// Archives an object.
   ///
   /// - parameter object: The object to archive.
-  override func archiveObject(object: ObjectType?) {
-    box.archiveObject(object)
-  }
+  public func archiveObject(object: ObjectType?) { baseArchiveObject(object: object) }
   
-  /// Unarchives an object using the underlying strategy.
+  /// Unarchives an object.
   ///
   /// - returns: The unarchived object.
-  override func unarchiveObject() -> ObjectType? {
-    return box.unarchiveObject()
-  }
+  public func unarchiveObject() -> ObjectType? { return baseUnarchiveObject() }
   
-  override func synchronize() {
-     return box.synchronize()
-  }
-}
-
-final class AnyStrategyBox<Base:Strategy> : AnyStrategyBase<Base.ObjectType> {
-  var base: Base
-  
-  init(_ base: Base) { self.base = base }
-  
-  override func archiveObject(object: Base.ObjectType?) {
-    base.archiveObject(object)
-  }
-  
-  override func unarchiveObject() -> Base.ObjectType? {
-    return base.unarchiveObject()
-  }
-  
-  override func synchronize() {
-    return base.synchronize()
-  }
+  /// Performs any necessary synchronization.
+  public func synchronize() { baseSynchronize() }
 }

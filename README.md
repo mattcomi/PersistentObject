@@ -5,21 +5,21 @@
 [![](https://img.shields.io/cocoapods/v/PersistentObject.svg?style=flat)](https://cocoapods.org/pods/PersistentObject)
 [![Platform](https://img.shields.io/cocoapods/p/PersistentObject.svg?style=flat)](http://cocoadocs.org/docsets/PersistentObject)
 
-Simplifies object persistence in Swift.
+Simple object persistence in Swift.
 
 Include support for `NSUserDefaults`, `NSUbiquitousKeyValueStore` and the file system.
 
 [API Documentation](http://cocoadocs.org/docsets/PersistentObject)
 
-## Usage
+## Getting Started
 
-To persist an NSCoding-compliant object to the `NSUserDefaults` database, specify its key.
+To persist an object, initialize a `PersistentObject` with the desired strategy. To persist a `Person` to the `NSUserDefaults` database:
 
 ```swift
-let persistentPerson = PersistentObject<Person>(key: "person")
+let persistentPerson = PersistentObject<Person>.userDefaults(key: personKey)
 ```
 
-If an object with the specified key has been persisted previously, it will be unarchived from `NSUserDefaults` and initialized. If not, you will need to initialize it yourself.
+If a `Person` with the specified key had been persisted previously, it will be unarchived from `NSUserDefaults` and initialized. If not, you will need to initialize it yourself:
 
 ```swift
 if persistentPerson.object == nil {
@@ -27,7 +27,7 @@ if persistentPerson.object == nil {
 }
 ```
 
-The underlying object may be accessed with the `object` property.
+The underlying object may now be accessed with the `object` property.
 
 ```swift
 persistentPerson.object?.age = 70
@@ -41,23 +41,44 @@ persistentPerson.save()
 
 ## Strategies
 
-You may specify *how* an object is persisted by specifying its `Strategy`. In this example, the `Person` is persisted to a file named `file.data`.
+The follow strategies are supported currently:
+
+- `FileStrategy`: Persists to the file system.
+- `UbiquituousKeyValueStoreStrategy`: Persists to the `NSUbiquituousKeyValueStore`.
+- `UserDefaultsStrategy`: Persists to the `NSUserDefaults` database.
+
+## External Changes
+
+A `Strategy` may support external changes. For example, when using the `UbiquituousKeyValueStoreStrategy`, it is possible for the value to change in iCloud. If an external change occurs, the `PersistentObject`'s underlying object is replaced. To be notified when this occurs, provide a delegate when initializing the `PersistentObject`:
 
 ```swift
-let persistentPerson = PersistentObject<Person>(strategy: FileStrategy(filename: "file.data"))
+let delegate = PersistentObjectDelegate<Person>()
+
+delegate.objectChangedExternally = { (persistentObject) in
+  // handle the external change
+}
+
+let p = PersistentObject<Person>.ubiquituousKeyValueStore(
+  key: "personKey",
+  delegate: delegate)
 ```
-
-This example persists the `Person` to the NSUbiquitousKeyValueStore.
-
-```swift
-let strategy = UbiquituousKeyValueStoreStrategy<Person>(key: "person")
-strategy.delegate = self
-
-let persistentPerson = PersistentObject<Person>(strategy: strategy)
-```
-
-Note `strategy.delegate = self`. Delegates of the `UbiquituousKeyValueStoreStrategy` are notified when the object changes externally.
 
 ## Custom Strategies
 
-You may implement the `Strategy` protocol to provide alternative persistence strategies.
+To provide a custom persistence strategy, you may implement the `Strategy` protocol:
+
+```swift
+public protocol Strategy {
+  associatedtype ObjectType
+  var delegate: StrategyDelegate<ObjectType> { get }
+  func archiveObject(object: ObjectType?)
+  func unarchiveObject() -> ObjectType
+  func synchronize()
+}
+```
+
+Then, to initialize a `PersistentObject` with that `Strategy`:
+
+```swift
+let p = PersistentObject<Person>(strategy: myCustomStrategy)
+```
