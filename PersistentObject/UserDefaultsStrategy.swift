@@ -9,8 +9,8 @@ class UserDefaultsStrategy<ObjectType:NSCoding> : Strategy {
   
   /// Initializes the `UserDefaultsStrategy` with the specified key and `NSUserDefaults` database.
   ///
-  /// - parameter key:          The key to associate with this object.
-  /// - parameter userDefaults: The `NSUserDefaults` database. Defaults to `NSUserDefaults.standardUserDefaults()`.
+  /// - parameter key:          The key.
+  /// - parameter userDefaults: The `NSUserDefaults` database.
   init(key: String, userDefaults: NSUserDefaults) {
     self.key = key
     self.userDefaults = userDefaults

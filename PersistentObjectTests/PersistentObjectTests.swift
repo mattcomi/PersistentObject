@@ -3,12 +3,6 @@
 import XCTest
 import PersistentObject
 
-class MyPersistentObjectDelegate : PersistentObjectDelegate {
-  func objectChangedExternally<ObjectType>(persistentObject: PersistentObject<ObjectType>) {
-    print("changed")
-  }
-}
-
 class MockStrategy : Strategy {
   typealias ObjectType = Person
   
@@ -211,7 +205,15 @@ class PersistentObjectTests: XCTestCase {
   func testMockStrategy() {
     let strategy = MockStrategy()
 
-    let delegate = MyPersistentObjectDelegate()
+    let delegate = PersistentObjectDelegate<Person>()
+    
+    var objectDidChangeExternally = false
+    
+    delegate.objectChangedExternally = { (persistentObject) in
+      objectDidChangeExternally = true
+      
+      XCTAssert(persistentObject.object?.name == "Patti Levin")
+    }
     
     let persistentPerson = PersistentObject<Person>(strategy: strategy, delegate: delegate)
 
@@ -233,5 +235,7 @@ class PersistentObjectTests: XCTestCase {
     strategy.delegate.objectChangedExternally?(strategy: AnyStrategy(strategy: strategy), object: externalPerson)
     
     XCTAssertEqual(externalPerson, persistentPerson.object)
+    
+    XCTAssert(objectDidChangeExternally)
   }
 }
