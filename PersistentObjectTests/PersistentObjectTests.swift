@@ -64,7 +64,7 @@ class Person: NSObject, NSCoding {
   }
 }
 
-func ==(lhs: Person, rhs: Person) -> Bool {
+func == (lhs: Person, rhs: Person) -> Bool {
   return lhs.name == rhs.name && lhs.age == rhs.age
 }
 

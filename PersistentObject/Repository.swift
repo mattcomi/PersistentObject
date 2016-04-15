@@ -42,7 +42,7 @@ public class AnyRepository<ObjectType> : Repository {
 
   /// Initializes the `AnyRepository` with the specified underlying `Repository`.
   ///
-  /// - parameter strategy: The underlying `Repository`.
+  /// - parameter repository: The underlying `Repository`.
   public init<RepositoryType: Repository where ObjectType == RepositoryType.ObjectType>(_ repository: RepositoryType) {
     baseDelegate = { repository.delegate }
     baseArchiveObject = repository.archiveObject

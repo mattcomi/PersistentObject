@@ -102,8 +102,9 @@ public extension PersistentObject where ObjectType:NSCoding {
 
   /// Initializes the `PersistentObject` with a `UbiquituousKeyValueStoreRepository`.
   ///
-  /// - parameter key:      The key to associate with this object.
-  /// - parameter delegate: The `PersistentObjectDelegate` to notify when the object changes externally.
+  /// - parameter ubiquituousKeyValueStoreKey: The key to associate with this object.
+  /// - parameter delegate:                    The `PersistentObjectDelegate` to notify when the object changes
+  ///                                          externally.
   public convenience init(
     ubiquituousKeyValueStoreKey: String,
     delegate: PersistentObjectDelegate<ObjectType>? = PersistentObjectDelegate()) {
