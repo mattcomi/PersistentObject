@@ -3,10 +3,10 @@
 /// A `Repository` that persists to the `NSUserDefaults` database.
 class UserDefaultsRepository<ObjectType:NSCoding> : Repository {
   let delegate = RepositoryDelegate<ObjectType>()
-  
+
   private let key: String
   private var userDefaults: NSUserDefaults
-  
+
   /// Initializes the `UserDefaultsRepository` with the specified key and `NSUserDefaults` database.
   ///
   /// - parameter key:          The key.
@@ -15,7 +15,7 @@ class UserDefaultsRepository<ObjectType:NSCoding> : Repository {
     self.key = key
     self.userDefaults = userDefaults
   }
-  
+
   /// Archives an object to the `NSUserDefaults` database.
   ///
   /// - parameter object: The object.
@@ -26,7 +26,7 @@ class UserDefaultsRepository<ObjectType:NSCoding> : Repository {
       userDefaults.removeObjectForKey(key)
     }
   }
-  
+
   /// Unarchives an object from the `NSUserDefaults` database.
   ///
   /// - returns: The unarchived object.
@@ -34,10 +34,10 @@ class UserDefaultsRepository<ObjectType:NSCoding> : Repository {
     if let data = userDefaults.objectForKey(key) as? NSData {
       return NSKeyedUnarchiver.unarchiveObjectWithData(data) as? ObjectType
     }
-    
+
     return nil
   }
-  
+
   /// Synchronizes the `NSUserDefaults` database.
   func synchronize() {
     userDefaults.synchronize()

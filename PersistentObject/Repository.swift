@@ -3,7 +3,7 @@
 /// Types adopting the `Repository` protocol are capable of archiving and unarchiving an object to a repository.
 public protocol Repository {
   associatedtype ObjectType
- 
+
   /// The delegate to notify when the object changes externally.
   var delegate: RepositoryDelegate<ObjectType> { get }
 
@@ -11,12 +11,12 @@ public protocol Repository {
   ///
   /// - parameter object: The object to archive.
   func archiveObject(object: ObjectType?)
-  
+
   /// Unarchives an object.
   ///
   /// - returns: The unarchived object.
   func unarchiveObject() -> ObjectType?
-  
+
   /// Performs any necessary synchronization, e.g. write modifications to disk.
   func synchronize()
 }
@@ -25,7 +25,7 @@ public protocol Repository {
 public final class RepositoryDelegate<ObjectType> {
   /// Initializes the `RepositoryDelegate`.
   public init() { }
-  
+
   /// A closure that is called when the object changed externally.
   ///
   /// - parameter repository: The type-erased repository.
@@ -49,20 +49,20 @@ public class AnyRepository<ObjectType> : Repository {
     baseUnarchiveObject = repository.unarchiveObject
     baseSynchronize = repository.synchronize
   }
-  
+
   /// The delegate to notify when the object changes externally.
   public var delegate: RepositoryDelegate<ObjectType> { return baseDelegate() }
-  
+
   /// Archives an object.
   ///
   /// - parameter object: The object to archive.
   public func archiveObject(object: ObjectType?) { baseArchiveObject(object: object) }
-  
+
   /// Unarchives an object.
   ///
   /// - returns: The unarchived object.
   public func unarchiveObject() -> ObjectType? { return baseUnarchiveObject() }
-  
+
   /// Performs any necessary synchronization.
   public func synchronize() { baseSynchronize() }
 }
