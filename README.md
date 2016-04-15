@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="http://raquo.net/images/banner-pantry.png" alt="Storage" />
+    <img src="https://raw.githubusercontent.com/mattcomi/PersistentObject/doc/logo.png" alt="PersistentObject" />
 </p>
 
 [![](https://travis-ci.org/mattcomi/PersistentObject.svg?branch=master)](https://travis-ci.org/mattcomi/PersistentObject)
