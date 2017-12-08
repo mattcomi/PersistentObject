@@ -2,7 +2,7 @@
     <img src="https://raw.githubusercontent.com/mattcomi/PersistentObject/doc/logo.png" alt="PersistentObject" />
 </p>
 
-[![](https://travis-ci.org/mattcomi/PersistentObject.svg?branch=master)](https://travis-ci.org/mattcomi/PersistentObject)
+[![BuddyBuild](https://dashboard.buddybuild.com/api/statusImage?appID=5a2a623dc212fd0001ed3a29&branch=master&build=latest)](https://dashboard.buddybuild.com/apps/5a2a623dc212fd0001ed3a29/build/latest?branch=master&style=flat)
 [![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
 [![](https://img.shields.io/cocoapods/v/PersistentObject.svg?style=flat)](https://cocoapods.org/pods/PersistentObject)
 [![Platform](https://img.shields.io/cocoapods/p/PersistentObject.svg?style=flat)](http://cocoadocs.org/docsets/PersistentObject)
