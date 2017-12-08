@@ -1,4 +1,4 @@
-// Copyright © 2016 Matt Comi. All rights reserved.
+// Copyright © 2017 Matt Comi. All rights reserved.
 
 import XCTest
 import PersistentObject
@@ -14,11 +14,11 @@ class MyRepository: Repository {
 
   init() {}
 
-  func archiveObject(object: Person?) {
+  func archive(_ object: Person?) {
     self.didArchive = true
   }
 
-  func unarchiveObject() -> Person? {
+  func unarchive() -> Person? {
     self.didUnarchive = true
     return nil
   }
@@ -38,20 +38,20 @@ class Person: NSObject, NSCoding {
   }
 
   required init?(coder aDecoder: NSCoder) {
-    guard let name = aDecoder.decodeObjectForKey("name") as? String else {
+    guard let name = aDecoder.decodeObject(forKey: "name") as? String else {
       return nil
     }
 
     self.name = name
-    self.age = aDecoder.decodeIntegerForKey("age")
+    self.age = aDecoder.decodeInteger(forKey: "age")
   }
 
-  func encodeWithCoder(aCoder: NSCoder) {
-    aCoder.encodeObject(name, forKey: "name")
-    aCoder.encodeInteger(age, forKey: "age")
+  func encode(with aCoder: NSCoder) {
+    aCoder.encode(name, forKey: "name")
+    aCoder.encode(age, forKey: "age")
   }
 
-  override func isEqual(object: AnyObject?) -> Bool {
+  override func isEqual(_ object: Any?) -> Bool {
     guard let rhs = object as? Person else {
       return false
     }
@@ -68,31 +68,30 @@ func == (lhs: Person, rhs: Person) -> Bool {
   return lhs.name == rhs.name && lhs.age == rhs.age
 }
 
-func documentDirectory() -> NSURL {
-  return NSFileManager.defaultManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask)[0]
+func documentDirectory() -> URL {
+  return FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
 }
 
 class PersistentObjectTests: XCTestCase {
   let personKey = "person"
   let dateKey = "date"
 
-  let filename = documentDirectory().URLByAppendingPathComponent("test.data").path!
+  let filename = documentDirectory().appendingPathComponent("test.data").path
 
   override func setUp() {
     super.setUp()
 
-    NSUserDefaults.standardUserDefaults().removeObjectForKey(personKey)
-    NSUserDefaults.standardUserDefaults().removeObjectForKey(dateKey)
+    UserDefaults.standard.removeObject(forKey: personKey)
+    UserDefaults.standard.removeObject(forKey: dateKey)
 
-    NSUserDefaults.resetStandardUserDefaults()
+    UserDefaults.resetStandardUserDefaults()
 
-    if NSFileManager.defaultManager().fileExistsAtPath(filename) {
-      try! NSFileManager.defaultManager().removeItemAtPath(filename)
+    if FileManager.default.fileExists(atPath: filename) {
+      try! FileManager.default.removeItem(atPath: filename)
     }
   }
 
   override func tearDown() {
-    // Put teardown code here. This method is called after the invocation of each test method in the class.
     super.tearDown()
   }
 
@@ -102,7 +101,7 @@ class PersistentObjectTests: XCTestCase {
     // verify we have a fresh slate.
     XCTAssertNil(persistentPerson.object)
 
-    persistentPerson.reset(Person(name: "Justin Theroux", age: 44))
+    persistentPerson.reset(object: Person(name: "Justin Theroux", age: 44))
 
     XCTAssertNotNil(persistentPerson.object)
 
@@ -131,7 +130,7 @@ class PersistentObjectTests: XCTestCase {
     // ...but their references should not be.
     XCTAssert(persistentPerson.object !== anotherPersistentPerson.object)
 
-    anotherPersistentPerson.reset(nil)
+    anotherPersistentPerson.reset(object: nil)
 
     // this should fail because anotherPerson hasn't been synchronized and despite being reset to nil, is still present
     // in NSUserDefaults.
@@ -144,16 +143,16 @@ class PersistentObjectTests: XCTestCase {
 
   func testFile() {
     // The documentDirectory doesn't exist on travis-ci so create it.
-    _ = try? NSFileManager.defaultManager().createDirectoryAtURL(
-        documentDirectory(),
-        withIntermediateDirectories: true,
-        attributes: nil)
+    _ = try? FileManager.default.createDirectory(
+      at: documentDirectory(),
+      withIntermediateDirectories: true,
+      attributes: nil)
 
     let person = PersistentObject<Person>(filename: filename)
 
     XCTAssertNil(person.object)
 
-    person.reset(Person(name: "Liv Tyler", age: 38))
+    person.reset(object: Person(name: "Liv Tyler", age: 38))
 
     XCTAssertNotNil(person.object)
 
@@ -175,7 +174,7 @@ class PersistentObjectTests: XCTestCase {
       return
     }
 
-    persistentPerson!.reset(Person(name: "Carrie Coon", age: 35))
+    persistentPerson!.reset(object: Person(name: "Carrie Coon", age: 35))
 
     XCTAssertNotNil(persistentPerson!.object)
 
@@ -232,7 +231,7 @@ class PersistentObjectTests: XCTestCase {
 
     let externalPerson = Person(name: "Patti Levin", age: 60)
 
-    myRepository.delegate.objectChangedExternally?(repository: AnyRepository(myRepository), object: externalPerson)
+    myRepository.delegate.objectChangedExternally?(AnyRepository(myRepository), externalPerson)
 
     XCTAssertEqual(externalPerson, persistentPerson.object)
 

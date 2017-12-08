@@ -12,49 +12,48 @@ class UbiquituousKeyValueStoreRepository<ObjectType:NSCoding> : Repository {
   init(key: String) {
     self.key = key
 
-    NSNotificationCenter.defaultCenter().addObserver(
+    NotificationCenter.default.addObserver(
       self,
       selector: #selector(ubiquitousKeyValueStoreDidChangeExternally),
-      name: NSUbiquitousKeyValueStoreDidChangeExternallyNotification,
-      object: NSUbiquitousKeyValueStore.defaultStore())
+      name: NSUbiquitousKeyValueStore.didChangeExternallyNotification,
+      object: NSUbiquitousKeyValueStore.default)
   }
 
   deinit {
-    NSNotificationCenter.defaultCenter().removeObserver(self)
+    NotificationCenter.default.removeObserver(self)
   }
 
   /// Archives an object to the `NSUbiquituousKeyValueStore`.
-  ///
   /// - parameter object: The object.
-  func archiveObject(object: ObjectType?) {
-    let store = NSUbiquitousKeyValueStore.defaultStore()
+  func archive(_ object: ObjectType?) {
+    let store = NSUbiquitousKeyValueStore.default
 
     if let object = object {
-      store.setData(NSKeyedArchiver.archivedDataWithRootObject(object), forKey: key)
+      store.set(NSKeyedArchiver.archivedData(withRootObject: object), forKey: key)
     } else {
-      store.removeObjectForKey(key)
+      store.removeObject(forKey: key)
     }
   }
 
   /// Unarchives an object from the `NSUbiquituousKeyValueStore` and synchronizes immediately to determine if a newer
   /// value exists in iCloud.
-  ///
   /// - returns: The unarchived object.
-  func unarchiveObject() -> ObjectType? {
+  func unarchive() -> ObjectType? {
     return unarchiveObject(synchronize: true)
   }
 
   /// Synchronizes the `NSUbiquituousKeyValueStore`.
   func synchronize() {
-    NSUbiquitousKeyValueStore.defaultStore().synchronize()
+    NSUbiquitousKeyValueStore.default.synchronize()
   }
 
-  private func unarchiveObject(synchronize synchronize: Bool) -> ObjectType? {
+  private func unarchiveObject(synchronize: Bool) -> ObjectType? {
     var object: ObjectType? = nil
 
-    let store = NSUbiquitousKeyValueStore.defaultStore()
-    if let data = store.dataForKey(key) {
-      object = NSKeyedUnarchiver.unarchiveObjectWithData(data) as? ObjectType
+    let store = NSUbiquitousKeyValueStore.default
+
+    if let data = store.data(forKey: key) {
+      object = NSKeyedUnarchiver.unarchiveObject(with: data) as? ObjectType
     }
 
     if synchronize {
@@ -84,7 +83,7 @@ class UbiquituousKeyValueStoreRepository<ObjectType:NSCoding> : Repository {
     if keys.contains(key) {
       let object = self.unarchiveObject(synchronize: false)
 
-      self.delegate.objectChangedExternally?(repository: AnyRepository(self), object: object)
+      self.delegate.objectChangedExternally?(AnyRepository(self), object)
     }
   }
 }

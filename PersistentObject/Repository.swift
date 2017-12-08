@@ -1,4 +1,4 @@
-// Copyright © 2016 Matt Comi. All rights reserved.
+// Copyright © 2017 Matt Comi. All rights reserved.
 
 /// Types adopting the `Repository` protocol are capable of archiving and unarchiving an object to a repository.
 public protocol Repository {
@@ -8,14 +8,12 @@ public protocol Repository {
   var delegate: RepositoryDelegate<ObjectType> { get }
 
   /// Archives an object.
-  ///
   /// - parameter object: The object to archive.
-  func archiveObject(object: ObjectType?)
+  func archive(_ object: ObjectType?)
 
   /// Unarchives an object.
-  ///
   /// - returns: The unarchived object.
-  func unarchiveObject() -> ObjectType?
+  func unarchive() -> ObjectType?
 
   /// Performs any necessary synchronization, e.g. write modifications to disk.
   func synchronize()
@@ -27,26 +25,24 @@ public final class RepositoryDelegate<ObjectType> {
   public init() { }
 
   /// A closure that is called when the object changed externally.
-  ///
   /// - parameter repository: The type-erased repository.
-  /// - parameter object:     The object.
-  public var objectChangedExternally: ((repository: AnyRepository<ObjectType>, object: ObjectType?) -> Void)?
+  /// - parameter object: The object.
+  public var objectChangedExternally: ((AnyRepository<ObjectType>, ObjectType?) -> Void)?
 }
 
 /// A type erased `Repository`.
 public class AnyRepository<ObjectType> : Repository {
   private let baseDelegate: () -> RepositoryDelegate<ObjectType>
-  private let baseArchiveObject: (object: ObjectType?) -> Void
-  private let baseUnarchiveObject: () -> ObjectType?
+  private let baseArchive: (ObjectType?) -> Void
+  private let baseUnarchive: () -> ObjectType?
   private let baseSynchronize: () -> Void
 
   /// Initializes the `AnyRepository` with the specified underlying `Repository`.
-  ///
   /// - parameter repository: The underlying `Repository`.
-  public init<RepositoryType: Repository where ObjectType == RepositoryType.ObjectType>(_ repository: RepositoryType) {
+  public init<RepositoryType: Repository>(_ repository: RepositoryType) where ObjectType == RepositoryType.ObjectType {
     baseDelegate = { repository.delegate }
-    baseArchiveObject = repository.archiveObject
-    baseUnarchiveObject = repository.unarchiveObject
+    baseArchive = repository.archive
+    baseUnarchive = repository.unarchive
     baseSynchronize = repository.synchronize
   }
 
@@ -54,14 +50,12 @@ public class AnyRepository<ObjectType> : Repository {
   public var delegate: RepositoryDelegate<ObjectType> { return baseDelegate() }
 
   /// Archives an object.
-  ///
   /// - parameter object: The object to archive.
-  public func archiveObject(object: ObjectType?) { baseArchiveObject(object: object) }
+  public func archive(_ object: ObjectType?) { baseArchive(object) }
 
   /// Unarchives an object.
-  ///
   /// - returns: The unarchived object.
-  public func unarchiveObject() -> ObjectType? { return baseUnarchiveObject() }
+  public func unarchive() -> ObjectType? { return baseUnarchive() }
 
   /// Performs any necessary synchronization.
   public func synchronize() { baseSynchronize() }

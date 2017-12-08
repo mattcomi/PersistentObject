@@ -69,8 +69,8 @@ Manual synchronization is typically only necessary when:
 The follow repositories are supported currently:
 
 - `FileRepository`: Persists to a file
-- `UbiquituousKeyValueStoreRepository`: Persists to the `NSUbiquituousKeyValueStore`
-- `UserDefaultsRepository`: Persists to the `NSUserDefaults` database
+- `UbiquituousKeyValueStoreRepository`: Persists to the `UbiquituousKeyValueStore`
+- `UserDefaultsRepository`: Persists to the `UserDefaults` database
 
 These repositories require that the object being persisted is `NSCoding` compliant.
 
@@ -98,8 +98,8 @@ To provide a custom repository, you may implement the `Repository` protocol:
 public protocol Repository {
   associatedtype ObjectType
   var delegate: RepositoryDelegate<ObjectType> { get }
-  func archiveObject(object: ObjectType?)
-  func unarchiveObject() -> ObjectType
+  func archive(_ object: ObjectType?)
+  func unarchive() -> ObjectType
   func synchronize()
 }
 ```
