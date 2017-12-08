@@ -1,4 +1,6 @@
-# PersistentObject
+<p align="center">
+    <img src="https://raw.githubusercontent.com/mattcomi/PersistentObject/doc/logo.png" alt="PersistentObject" />
+</p>
 
 [![](https://travis-ci.org/mattcomi/PersistentObject.svg?branch=master)](https://travis-ci.org/mattcomi/PersistentObject)
 [![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
