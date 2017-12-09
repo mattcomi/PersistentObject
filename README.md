@@ -13,6 +13,24 @@ Includes support for `NSUserDefaults`, `NSUbiquitousKeyValueStore` and the file 
 
 [API Documentation](http://cocoadocs.org/docsets/PersistentObject)
 
+## Installation
+
+### Cocoapods
+
+Add the following to your Podfile:
+
+```
+pod 'PersistentObject'
+```
+
+### Carthage
+
+Add the following to your Cartfile:
+
+```
+github "mattcomi/PersistentObject"
+```
+
 ## Getting Started
 
 To persist an object, initialize a `PersistentObject` with the desired repository. For example, to persist a `Vehicle` to a file:
